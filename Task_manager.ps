@@ -1,0 +1,89 @@
+# task_manager.py
+# Gerenciador de tarefas simples (terminal) - salva em tasks.txt
+
+import os
+
+DATA_FILE = "tasks.txt"
+
+def load_tasks():
+    if not os.path.exists(DATA_FILE):
+        return []
+    with open(DATA_FILE, "r", encoding="utf-8") as f:
+        lines = [line.strip() for line in f.readlines() if line.strip()]
+    return lines
+
+def save_tasks(tasks):
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        for t in tasks:
+            f.write(t + "\n")
+
+def list_tasks(tasks):
+    if not tasks:
+        print("\nNenhuma tarefa encontrada.\n")
+        return
+    print("\nTarefas:")
+    for i, t in enumerate(tasks, start=1):
+        print(f"{i}. {t}")
+    print("")
+
+def add_task(tasks):
+    text = input("Digite a tarefa: ").strip()
+    if not text:
+        print("Tarefa vazia. Cancelado.")
+        return
+    tasks.append(text)
+    save_tasks(tasks)
+    print("Tarefa adicionada.")
+
+def remove_task(tasks):
+    if not tasks:
+        print("Nenhuma tarefa para remover.")
+        return
+    list_tasks(tasks)
+    try:
+        idx = int(input("Número da tarefa a remover: ").strip())
+        if 1 <= idx <= len(tasks):
+            removed = tasks.pop(idx-1)
+            save_tasks(tasks)
+            print(f"Tarefa removida: {removed}")
+        else:
+            print("Índice inválido.")
+    except ValueError:
+        print("Entrada inválida.")
+
+def clear_tasks(tasks):
+    confirm = input("Tem certeza que quer apagar todas as tarefas? (s/N): ").strip().lower()
+    if confirm == "s":
+        tasks.clear()
+        save_tasks(tasks)
+        print("Todas as tarefas apagadas.")
+    else:
+        print("Cancelado.")
+
+def main():
+    tasks = load_tasks()
+    while True:
+        print("=== Gerenciador de Tarefas (terminal) ===")
+        print("1 - Listar tarefas")
+        print("2 - Adicionar tarefa")
+        print("3 - Remover tarefa")
+        print("4 - Apagar todas as tarefas")
+        print("5 - Sair")
+        choice = input("Escolha uma opção: ").strip()
+        if choice == "1":
+            list_tasks(tasks)
+        elif choice == "2":
+            add_task(tasks)
+        elif choice == "3":
+            remove_task(tasks)
+        elif choice == "4":
+            clear_tasks(tasks)
+        elif choice == "5":
+            print("Saindo...")
+            break
+        else:
+            print("Opção inválida.")
+        input("\nPressione Enter para continuar...")
+
+if __name__ == "__main__":
+    main()
